@@ -1,52 +1,16 @@
-# React + TypeScript + Vite
+📦 myShop - Online Product Display for Small Businesses
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+myShop is a platform designed to empower shop owners, product sellers, and small e-commerce businesses by allowing them to showcase their products online easily, without the need for a full website. With myShop, businesses can set up a personalized online store page, list their products, and share their custom link with customers, making it simple to market and sell products digitally.
+🎉 Features
 
-Currently, two official plugins are available:
+    Personalized Store Page: Each business gets its own unique URL to share with customers, providing an online presence without the hassle of setting up a full e-commerce site.
+    Easy Product Management: Add, edit, and delete products with an intuitive dashboard.
+    Customer-Friendly Interface: The clean and simple design makes it easy for customers to view products and make purchase decisions.
+    Mobile-Friendly Design: Optimized for mobile devices, making it easy for business owners and customers to access from anywhere.
+    Direct Contact Option: Customers can reach out to shop owners directly via provided contact options, such as phone, email, or messaging.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+🛠️ Tech Stack
 
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
-
-- Configure the top-level `parserOptions` property like this:
-
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
-
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
-
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
-
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
-```
-# myShop
-# myShop
+    Frontend: React and Tailwind CSS for a responsive and modern user interface.
+    Backend: Supabase for database, authentication, and API management.
+    Hosting: Vercel for easy deployment and management of the frontend.
