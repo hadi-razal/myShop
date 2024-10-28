@@ -1,4 +1,5 @@
 import { User, Package, PlusCircle, Users, Share2 } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
 const UserDashboard = () => {
@@ -90,9 +91,9 @@ const UserDashboard = () => {
               </div>
               <h3 className="text-lg font-semibold text-slate-950">Add Product</h3>
               <p className="text-gray-600 text-sm">Add a new product to your showcase</p>
-              <button className="w-full mt-4 px-4 py-2 rounded-md bg-green-600 text-white hover:bg-green-700 transition">
+              <Link to={'/add-product'}  className="w-full mt-4 px-4 py-2 rounded-md bg-green-600 text-white hover:bg-green-700 transition">
                 Add New Product
-              </button>
+              </Link>
             </div>
           </div>
 
