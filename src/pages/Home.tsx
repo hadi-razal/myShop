@@ -1,8 +1,8 @@
-import React, { ReactNode } from 'react';
+import React, { ReactNode, useEffect } from 'react';
 import { Star, Users, ShoppingBag, Globe, Zap, Shield, Box, Settings, BarChart, ArrowRight } from 'lucide-react';
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from '../../libs/firebase';
-import {  useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 interface StatProps {
   icon: ReactNode;
@@ -79,19 +79,17 @@ const HomePage: React.FC = () => {
     }
   ];
 
-  const handleRoute = () => {
+  useEffect(() => {
     try {
       onAuthStateChanged(auth, (user) => {
         if (user) {
           navigate('/shop');
-        } else {
-          navigate('/login');
         }
       });
     } catch (error) {
       console.log(error);
     }
-  };
+  },[])
 
   return (
     <div className="bg-gray-300">
@@ -117,12 +115,12 @@ const HomePage: React.FC = () => {
         </div>
 
         <div className="flex justify-center mb-32">
-          <button onClick={handleRoute} className="flex items-center gap-3 px-6 py-3 rounded-md text-base font-medium transition-all duration-300 bg-slate-950 hover:bg-slate-800 text-white shadow-lg">
+          <Link to={'/login'}  className="flex items-center gap-3 px-6 py-3 rounded-md text-base font-medium transition-all duration-300 bg-slate-950 hover:bg-slate-800 text-white shadow-lg">
             Start Selling Now
             <ArrowRight className="w-5 h-5" />
-          </button>
+          </Link>
         </div>
-        
+
         <div className="grid grid-cols-2 md:grid-cols-4 gap-12 max-w-4xl mx-auto border-t border-gray-300 pt-8">
           {stats.map((stat, i) => (
             <Stat key={i} {...stat} />

@@ -36,15 +36,24 @@ const Header = () => {
 
         {/* Desktop Menu */}
         <div className="hidden md:flex text-slate-950 text-lg items-center gap-6">
-          <Link to="/pricing" className="cursor-pointer">
-            Pricing
-          </Link>
-          <Link to="/about" className="cursor-pointer">
-            About Us
-          </Link>
-          <Link to="/contact" className="cursor-pointer">
-            Contact Us
-          </Link>
+
+          {!isUser && (
+            <>
+              <Link to="/pricing" className="cursor-pointer">
+                Pricing
+              </Link>
+              <Link to="/about" className="cursor-pointer">
+                About Us
+              </Link>
+              <Link to="/contact" className="cursor-pointer">
+                Contact Us
+              </Link>
+            </>
+          )}
+
+
+
+
           {!isUser ? (
             <Link to="/login" className="cursor-pointer py-1 px-4 bg-slate-950 text-white rounded-md">
               Login

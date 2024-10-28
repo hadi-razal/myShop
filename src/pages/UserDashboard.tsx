@@ -1,64 +1,78 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
-import { LogOut, User, ShoppingBag, Settings } from 'lucide-react';
-import { signOut } from 'firebase/auth';
-import { auth } from '../../libs/firebase';
+import {  User, Settings, Package, PlusCircle } from 'lucide-react';
 
-const UserDashboard: React.FC = () => {
-  const navigate = useNavigate();
-
-  const handleLogout = () => {
-    signOut(auth)
-    console.log('User logged out');
-    navigate('/login');
-  };
+const UserDashboard = () => {
 
   return (
-    <div className="min-h-screen flex flex-col items-center p-6 pt-40">
-      {/* Dashboard Header */}
-      <header className="w-full max-w-3xl flex items-center justify-between mb-8  p-4">
-        <h1 className="text-2xl font-semibold text-slate-950">Welcome to Your Dashboard</h1>
-        <button
-          onClick={handleLogout}
-          className="flex items-center gap-2 text-red-500 hover:text-red-600 transition"
-        >
-          <LogOut className="w-5 h-5" />
-          <span>Logout</span>
-        </button>
-      </header>
+    <div className="min-h-screen bg-gray-50 pt-40">
+      
 
-      {/* Dashboard Content */}
-      <section className="w-full max-w-3xl grid grid-cols-1 sm:grid-cols-2 gap-6 pb-10">
-        {/* Profile */}
-        <div className="p-6 bg-gray-200 rounded-lg shadow text-center space-y-4">
-          <User className="w-10 h-10 mx-auto text-slate-950" />
-          <h2 className="text-xl font-semibold text-slate-950">My Profile</h2>
-          <p className="text-gray-600">View and edit your profile details</p>
-          <button className="mt-4 px-4 py-2 rounded-md bg-slate-950 text-white hover:bg-slate-800 transition">
-            Go to Profile
-          </button>
+      {/* Main Content */}
+      <main className="max-w-6xl mx-auto p-6 pt-8">
+        {/* Welcome Message */}
+        <div className="bg-white rounded-lg shadow-sm p-6 mb-8">
+          <h2 className="text-xl font-semibold text-slate-950 mb-2">Welcome back!</h2>
+          <p className="text-gray-600">Manage your products and account settings from your personal dashboard.</p>
         </div>
 
-        {/* Orders */}
-        <div className="p-6 bg-gray-200 rounded-lg shadow text-center space-y-4">
-          <ShoppingBag className="w-10 h-10 mx-auto text-slate-950" />
-          <h2 className="text-xl font-semibold text-slate-950">My Orders</h2>
-          <p className="text-gray-600">Manage your order history and track shipments</p>
-          <button className="mt-4 px-4 py-2 rounded-md bg-slate-950 text-white hover:bg-slate-800 transition">
-            View Orders
-          </button>
-        </div>
+        {/* Dashboard Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {/* Add Product Card */}
+          <div className="bg-white rounded-lg shadow-sm p-6 hover:shadow-md transition duration-300">
+            <div className="flex flex-col items-center text-center space-y-4">
+              <div className="bg-green-50 p-3 rounded-full">
+                <PlusCircle className="w-8 h-8 text-green-600" />
+              </div>
+              <h3 className="text-lg font-semibold text-slate-950">Add Product</h3>
+              <p className="text-gray-600 text-sm">List a new product for your store</p>
+              <button className="w-full mt-4 px-4 py-2 rounded-md bg-green-600 text-white hover:bg-green-700 transition">
+                Add New Product
+              </button>
+            </div>
+          </div>
 
-        {/* Settings */}
-        <div className="p-6 bg-gray-200 rounded-lg shadow text-center space-y-4">
-          <Settings className="w-10 h-10 mx-auto text-slate-950" />
-          <h2 className="text-xl font-semibold text-slate-950">Settings</h2>
-          <p className="text-gray-600">Configure your account settings</p>
-          <button className="mt-4 px-4 py-2 rounded-md bg-slate-950 text-white hover:bg-slate-800 transition">
-            Account Settings
-          </button>
+          {/* View Products Card */}
+          <div className="bg-white rounded-lg shadow-sm p-6 hover:shadow-md transition duration-300">
+            <div className="flex flex-col items-center text-center space-y-4">
+              <div className="bg-blue-50 p-3 rounded-full">
+                <Package className="w-8 h-8 text-blue-600" />
+              </div>
+              <h3 className="text-lg font-semibold text-slate-950">My Products</h3>
+              <p className="text-gray-600 text-sm">View and manage your product catalog</p>
+              <button className="w-full mt-4 px-4 py-2 rounded-md bg-blue-600 text-white hover:bg-blue-700 transition">
+                View Products
+              </button>
+            </div>
+          </div>
+
+          {/* Profile Card */}
+          <div className="bg-white rounded-lg shadow-sm p-6 hover:shadow-md transition duration-300">
+            <div className="flex flex-col items-center text-center space-y-4">
+              <div className="bg-purple-50 p-3 rounded-full">
+                <User className="w-8 h-8 text-purple-600" />
+              </div>
+              <h3 className="text-lg font-semibold text-slate-950">My Profile</h3>
+              <p className="text-gray-600 text-sm">View and edit your profile details</p>
+              <button className="w-full mt-4 px-4 py-2 rounded-md bg-purple-600 text-white hover:bg-purple-700 transition">
+                Edit Profile
+              </button>
+            </div>
+          </div>
+
+          {/* Settings Card */}
+          <div className="bg-white rounded-lg shadow-sm p-6 hover:shadow-md transition duration-300">
+            <div className="flex flex-col items-center text-center space-y-4">
+              <div className="bg-orange-50 p-3 rounded-full">
+                <Settings className="w-8 h-8 text-orange-600" />
+              </div>
+              <h3 className="text-lg font-semibold text-slate-950">Settings</h3>
+              <p className="text-gray-600 text-sm">Configure your account settings</p>
+              <button className="w-full mt-4 px-4 py-2 rounded-md bg-orange-600 text-white hover:bg-orange-700 transition">
+                Manage Settings
+              </button>
+            </div>
+          </div>
         </div>
-      </section>
+      </main>
     </div>
   );
 };
