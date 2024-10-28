@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { Menu, X } from "lucide-react";
 import { onAuthStateChanged, signOut } from "firebase/auth";
@@ -7,6 +7,8 @@ import { auth } from "../../libs/firebase";
 const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isUser, setIsUser] = useState(false);
+
+  const navigate = useNavigate()
 
   const toggleMenu = () => setIsOpen(!isOpen);
 
@@ -20,6 +22,7 @@ const Header = () => {
   const handleLogout = async () => {
     try {
       await signOut(auth);
+      navigate('/login')
       setIsUser(false);
       toggleMenu(); // Close menu on mobile when logging out
     } catch (error) {
