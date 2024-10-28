@@ -14,17 +14,17 @@ const UserDashboard = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50 pt-20">
+    <div className="min-h-screen  pt-20">
       <main className="max-w-7xl mx-auto p-6">
         {/* Welcome Message */}
-        <div className="bg-white rounded-lg shadow-sm p-6 mb-8">
+        <div className="bg-gray-200 rounded-lg shadow-sm p-6 mb-8">
           <h2 className="text-2xl font-bold text-slate-950 mb-2">Product Showcase Dashboard</h2>
           <p className="text-gray-600">Share your products and track visitor engagement</p>
         </div>
 
         {/* Quick Stats */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <div className="bg-white p-6 rounded-lg shadow-sm">
+          <div className="bg-gray-200 p-6 rounded-lg shadow-sm">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-gray-500 text-sm">Total Products</p>
@@ -37,7 +37,7 @@ const UserDashboard = () => {
             </div>
           </div>
 
-          <div className="bg-white p-6 rounded-lg shadow-sm">
+          <div className="bg-gray-200 p-6 rounded-lg shadow-sm">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-gray-500 text-sm">Total Visitors</p>
@@ -50,7 +50,7 @@ const UserDashboard = () => {
             </div>
           </div>
 
-          <div className="bg-white p-6 rounded-lg shadow-sm">
+          <div className="bg-gray-200 p-6 rounded-lg shadow-sm">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-gray-500 text-sm">Total Shares</p>
@@ -65,7 +65,7 @@ const UserDashboard = () => {
         </div>
 
         {/* Visitor Analytics */}
-        <div className="bg-white p-6 rounded-lg shadow-sm mb-8">
+        <div className="bg-gray-200 p-6 rounded-lg shadow-sm mb-8">
           <h3 className="text-lg font-semibold mb-4">Visitor Analytics</h3>
           <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
@@ -83,9 +83,9 @@ const UserDashboard = () => {
         {/* Action Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {/* Add Product Card */}
-          <div className="bg-white rounded-lg shadow-sm p-6 hover:shadow-md transition duration-300">
+          <div className="bg-gray-200 rounded-lg shadow-sm p-6 hover:shadow-md transition duration-300">
             <div className="flex flex-col items-center text-center space-y-4">
-              <div className="bg-green-50 p-3 rounded-full">
+              <div className="bg-gray-100 p-3 rounded-full">
                 <PlusCircle className="w-8 h-8 text-green-600" />
               </div>
               <h3 className="text-lg font-semibold text-slate-950">Add Product</h3>
@@ -97,9 +97,9 @@ const UserDashboard = () => {
           </div>
 
           {/* View Catalog Card */}
-          <div className="bg-white rounded-lg shadow-sm p-6 hover:shadow-md transition duration-300">
+          <div className="bg-gray-200 rounded-lg shadow-sm p-6 hover:shadow-md transition duration-300">
             <div className="flex flex-col items-center text-center space-y-4">
-              <div className="bg-blue-50 p-3 rounded-full">
+              <div className="bg-gray-100 p-3 rounded-full">
                 <Package className="w-8 h-8 text-blue-600" />
               </div>
               <h3 className="text-lg font-semibold text-slate-950">My Catalog</h3>
@@ -116,9 +116,9 @@ const UserDashboard = () => {
           </div>
 
           {/* Profile Card */}
-          <div className="bg-white rounded-lg shadow-sm p-6 hover:shadow-md transition duration-300">
+          <div className="bg-gray-200 rounded-lg shadow-sm p-6 hover:shadow-md transition duration-300">
             <div className="flex flex-col items-center text-center space-y-4">
-              <div className="bg-purple-50 p-3 rounded-full">
+              <div className="bg-gray-100  p-3 rounded-full">
                 <User className="w-8 h-8 text-purple-600" />
               </div>
               <h3 className="text-lg font-semibold text-slate-950">Profile</h3>
