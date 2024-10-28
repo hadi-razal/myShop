@@ -4,6 +4,7 @@ import HomePage from "./pages/Home"
 import AboutUs from "./pages/AboutUs"
 import Login from "./pages/Login"
 import Register from "./pages/Register"
+import UserDashboard from "./pages/UserDashboard"
 // import Footer from "./components/Footer"
 
 const App = () => {
@@ -16,6 +17,9 @@ const App = () => {
         <Route path="/about-us" element={<AboutUs />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+
+        <Route path="/:username" element={<UserDashboard />} />
+
       </Routes>
 
       {/* <Footer/> */}

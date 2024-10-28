@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 import { ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { auth, db } from '../../libs/firebase';
+import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { setDoc, doc } from 'firebase/firestore';
 
 const RegisterPage: React.FC = () => {
     const [email, setEmail] = useState('');
@@ -8,23 +11,40 @@ const RegisterPage: React.FC = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
 
-    const handleLogin = (e: React.FormEvent) => {
+    const handleRegister = async (e: React.FormEvent) => {
         e.preventDefault();
-        // Handle login logic here
-        console.log('Logging in with:', { email, password });
+        try {
+            // Create user with email and password
+            const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+            const user = userCredential.user;
+
+            user.uid
+
+            // Add user details to Firestore
+            await setDoc(doc(db, "users", user.uid), {
+                uid: user.uid,
+                name,
+                username,
+                email,
+            });
+            
+            console.log('Account created successfully:', user);
+        } catch (error) {
+            console.error('Error creating account:', error);
+        }
     };
 
     return (
         <div className="min-h-screen flex items-center justify-center">
             <div className="  rounded-md  p-8 max-w-md w-full">
                 <h2 className="text-2xl font-bold text-slate-950 text-center mb-6">Login to Your Account</h2>
-                <form onSubmit={handleLogin} className="space-y-6">
+                <form onSubmit={handleRegister} className="space-y-6">
                     <div>
                         <label className="block text-sm font-medium text-slate-950 mb-2" htmlFor="email">
                             Full Name
                         </label>
                         <input
-                            type="email"
+                            type="text"
                             id="email"
                             value={name}
                             onChange={(e) => setName(e.target.value)}
@@ -52,7 +72,7 @@ const RegisterPage: React.FC = () => {
                             Username
                         </label>
                         <input
-                            type="email"
+                            type="text"
                             id="email"
                             value={username}
                             onChange={(e) => setUsername(e.target.value)}
