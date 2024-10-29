@@ -1,7 +1,7 @@
 
 import { useState, useEffect, ChangeEvent, FormEvent } from 'react';
 import { Plus, X } from 'lucide-react';
-import { addDoc, collection } from 'firebase/firestore';
+import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
 import { auth, db, storage } from '../../libs/firebase';
 import { onAuthStateChanged } from 'firebase/auth';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
@@ -18,6 +18,7 @@ interface ProductData {
   availableStock: string;
   images: string[];
   tags: string;
+  createdAt?:Date;
 }
 
 const CreateProduct = () => {
@@ -83,7 +84,7 @@ const CreateProduct = () => {
   const handleCategoryChange = (e: ChangeEvent<HTMLSelectElement>) => {
     setProductData(prev => ({
       ...prev,
-      category: e.target.value
+      category: e.target.value,
     }));
   };
 
@@ -123,7 +124,8 @@ const CreateProduct = () => {
 
             await addDoc(collection(db, `${user.uid}`), {
               ...productData,
-              images: imageUrls
+              images: imageUrls,
+              createdAt: serverTimestamp(), 
             });
 
             console.log('Product Data:', productData);
@@ -168,6 +170,7 @@ const CreateProduct = () => {
             <label className="block text-sm font-medium">Product Name</label>
             <input
               type="text"
+              disabled={isUploading}
               name="name"
               value={productData.name}
               onChange={handleInputChange}
@@ -181,6 +184,7 @@ const CreateProduct = () => {
             <label className="block text-sm font-medium">Description</label>
             <textarea
               name="description"
+              disabled={isUploading}
               value={productData.description}
               onChange={handleInputChange}
               className="w-full px-3 py-2 border rounded-md h-32 bg-gray-200"
@@ -193,6 +197,7 @@ const CreateProduct = () => {
             <label className="block text-sm font-medium">Regular Price</label>
             <input
               type="text"
+              disabled={isUploading}
               name="regularPrice"
               value={productData.regularPrice}
               onChange={handleInputChange}
@@ -203,6 +208,7 @@ const CreateProduct = () => {
           <div className="space-y-2">
             <label className="block text-sm font-medium">Discount Price</label>
             <input
+              disabled={isUploading}
               type="text"
               name="discountPrice"
               value={productData.discountPrice}
@@ -217,6 +223,7 @@ const CreateProduct = () => {
             <label className="block text-sm font-medium">Category</label>
             <select
               name="category"
+              disabled={isUploading}
               value={productData.category}
               onChange={handleCategoryChange}
               className="w-full px-3 py-2 border rounded-md"
@@ -226,6 +233,7 @@ const CreateProduct = () => {
               <option value="clothing">Clothing</option>
               <option value="home">Home</option>
               <option value="sports">Sports</option>
+              <option value="Auto Mobiles">Sports</option>
             </select>
           </div>
 
@@ -248,6 +256,7 @@ const CreateProduct = () => {
               <label className="block text-sm font-medium">Stock Quantity (optional)</label>
               <input
                 type="text"
+                disabled={isUploading}
                 name="availableStock"
                 value={productData.availableStock}
                 onChange={handleInputChange}
@@ -262,6 +271,7 @@ const CreateProduct = () => {
             <label className="block text-sm font-medium">Color (optional)</label>
             <div className='flex items-center justify-center pb-3'>
               <input
+                disabled={isUploading}
                 type="text"
                 value={currentColor}
                 onChange={(e) => setCurrentColor(e.target.value)}
@@ -294,6 +304,7 @@ const CreateProduct = () => {
             <label className="block text-sm font-medium">Tags</label>
             <input
               type="text"
+              disabled={isUploading}
               name='tags'
               value={productData.tags}
               onChange={handleInputChange}
@@ -322,6 +333,7 @@ const CreateProduct = () => {
               <label className="flex items-center justify-center w-24 h-24 border rounded-md cursor-pointer hover:bg-gray-200">
                 <Plus className="w-8 h-8 text-gray-400" />
                 <input
+                  disabled={isUploading}
                   type="file"
                   multiple
                   onChange={handleImageUpload}

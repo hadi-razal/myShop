@@ -1,9 +1,32 @@
+import { onAuthStateChanged } from 'firebase/auth';
 import { User, Package, PlusCircle, Users, Share2 } from 'lucide-react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { auth, db } from '../../libs/firebase';
+import { collection, getDocs } from 'firebase/firestore';
 
 const UserDashboard = () => {
-  // Demo data for visitor analytics
+
+  const [numberOfProducts, setNumberOfProducts] = useState<number | null>(null);
+
+  useEffect(() => {
+    const fetchProductCount = async (userId: string) => {
+      try {
+        const productsCollection = collection(db, userId ); // Assuming "products" is the collection name
+        const productsSnapshot = await getDocs(productsCollection);
+        setNumberOfProducts(productsSnapshot.size); // `size` gives the number of docs
+      } catch (error) {
+        console.error("Error fetching products:", error);
+      }
+    };
+
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        fetchProductCount(user.uid);
+      }
+    });
+  }, []);
   const visitorData = [
     { name: 'Mon', visitors: 2400 },
     { name: 'Tue', visitors: 1398 },
@@ -29,7 +52,7 @@ const UserDashboard = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-gray-500 text-sm">Total Products</p>
-                <h3 className="text-2xl font-bold text-slate-950">24</h3>
+                <h3 className="text-2xl font-bold text-slate-950">{numberOfProducts}</h3>
                 <p className="text-green-500 text-sm">Active in catalog</p>
               </div>
               <div className="bg-blue-50 p-3 rounded-full">
@@ -91,27 +114,30 @@ const UserDashboard = () => {
               </div>
               <h3 className="text-lg font-semibold text-slate-950">Add Product</h3>
               <p className="text-gray-600 text-sm">Add a new product to your showcase</p>
-              <Link to={'/add-product'}  className="w-full mt-4 px-4 py-2 rounded-md bg-green-600 text-white hover:bg-green-700 transition">
+              <Link to={'/add-product'} className="w-full mt-4 px-4 py-2 rounded-md bg-green-600 text-white hover:bg-green-700 transition">
                 Add New Product
               </Link>
             </div>
           </div>
 
           {/* View Catalog Card */}
-          <div className="bg-gray-200 rounded-lg shadow-sm p-6 hover:shadow-md transition duration-300">
-            <div className="flex flex-col items-center text-center space-y-4">
+          <div className="bg-gray-200 rounded-lg shadow-sm p-6 hover:shadow-md transition duration-300 w-full">
+
+            <div className="flex flex-col items-center text-center space-y-4 w-full">
+
               <div className="bg-gray-100 p-3 rounded-full">
                 <Package className="w-8 h-8 text-blue-600" />
               </div>
+
               <h3 className="text-lg font-semibold text-slate-950">My Catalog</h3>
               <p className="text-gray-600 text-sm">View and manage your products</p>
-              <div className="w-full space-y-2">
-                <button className="w-full px-4 py-2 rounded-md bg-blue-600 text-white hover:bg-blue-700 transition">
+
+              <div className="w-full flex items-center justify-center">
+
+                <Link to={'/store/123'} className="w-full mt-4 px-4 py-2 rounded-md bg-green-600 text-white hover:bg-green-700 transition">
                   View Catalog
-                </button>
-                <button className="w-full px-4 py-2 rounded-md border border-blue-600 text-blue-600 hover:bg-blue-50 transition">
-                  Share Catalog Link
-                </button>
+                </Link>
+
               </div>
             </div>
           </div>

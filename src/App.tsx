@@ -9,6 +9,7 @@ import AddProduct from "./pages/AddProduct"
 import PrivacyPolicy from "./pages/PrivacyPolicy"
 import TermsAndConditions from "./pages/TermsAndConditions"
 import Footer from "./components/Footer"
+import Products from "./pages/Products"
 
 const App = () => {
   return (
@@ -24,6 +25,7 @@ const App = () => {
         <Route path="/register" element={<Register />} />
 
         <Route path="/shop" element={<UserDashboard />} />
+        <Route path="/store/:storeId" element={<Products />} />
         <Route path="/add-product" element={<AddProduct />} />
 
       </Routes>
