@@ -1,55 +1,48 @@
-import { Facebook, Instagram, Twitter, LinkedinIcon } from 'lucide-react';
-
 const Footer = () => {
-    const navigationLinks = [
-        { name: 'Home', href: '/' },
-        { name: 'About Us', href: '/about' },
-        { name: 'Services', href: '/services' },
-        { name: 'Contact', href: '/contact' },
-        { name: 'Blog', href: '/blog' },
-    ];
+  return (
+    <footer className="bg-gray-800 text-white py-10">
+      <div className="container mx-auto flex flex-col items-center">
+        
+        {/* SaaS Name */}
+        <h2 className="text-2xl font-semibold mb-4">myShop</h2>
 
-    const socialLinks = [
-        { name: 'Facebook', href: 'https://facebook.com', icon: <Facebook className="w-5 h-5" /> },
-        { name: 'Instagram', href: 'https://instagram.com', icon: <Instagram className="w-5 h-5" /> },
-        { name: 'Twitter', href: 'https://twitter.com', icon: <Twitter className="w-5 h-5" /> },
-        { name: 'LinkedIn', href: 'https://linkedin.com', icon: <LinkedinIcon className="w-5 h-5" /> },
-    ];
+        {/* Navigation Links */}
+        <div className="flex space-x-6 mb-4">
+          <a href="/about" className="text-base hover:text-gray-300">About Us</a>
+          <a href="/products" className="text-base hover:text-gray-300">Products</a>
+          <a href="/contact" className="text-base hover:text-gray-300">Contact</a>
+          <a href="/faq" className="text-base hover:text-gray-300">FAQ</a>
+          <a href="/blog" className="text-base hover:text-gray-300">Blog</a>
+        </div>
 
-    return (
-        <footer className="bg-gray-800 text-white py-8">
-            <div className="max-w-7xl mx-auto px-4">
-                {/* Navigation Links */}
-                <div className="mb-6">
-                    <h3 className="text-lg font-bold mb-2">Navigation</h3>
-                    <ul className="flex flex-wrap gap-4">
-                        {navigationLinks.map((link) => (
-                            <li key={link.name}>
-                                <a href={link.href} className="hover:underline">{link.name}</a>
-                            </li>
-                        ))}
-                    </ul>
-                </div>
+        {/* Policies Links */}
+        <div className="flex space-x-6 mb-4">
+          <a href="/terms-and-conditions" className="text-base hover:text-gray-300">Terms & Conditions</a>
+          <a href="/privacy-policy" className="text-base hover:text-gray-300">Privacy Policy</a>
+        </div>
 
-                {/* Social Media Links */}
-                <div className="mb-6">
-                    <h3 className="text-lg font-bold mb-2">Follow Us</h3>
-                    <div className="flex space-x-4">
-                        {socialLinks.map((social) => (
-                            <a key={social.name} href={social.href} target="_blank" rel="noopener noreferrer" className="hover:text-blue-400">
-                                {social.icon}
-                            </a>
-                        ))}
-                    </div>
-                </div>
+        {/* Contact Information */}
+        <div className="text-center mb-4">
+          <p>Phone: <a href="tel:919074063723" className="hover:text-gray-300">+919074063723</a></p>
+          <p>Email: <a href="mailto:hadhirasal22@gmail.com" className="hover:text-gray-300">dhadhirasal22@gmail.com</a></p>
+        </div>
 
-                {/* Copyright Information */}
-                <div className="text-center text-gray-400">
-                    <p>&copy; {new Date().getFullYear()} MyStore. All rights reserved.</p>
-                </div>
-            </div>
-        </footer>
-    );
+        {/* Social Media Links */}
+        <div className="flex space-x-6 mb-4">
+          <a href="https://github.com/hadi-razal" target="_blank" rel="noopener noreferrer" className="text-base hover:text-gray-300">GitHub</a>
+          <a href="https://www.linkedin.com/in/hadi-razal-690b22228/" target="_blank" rel="noopener noreferrer" className="text-base hover:text-gray-300">LinkedIn</a>
+          <a href="https://twitter.com/Hadi_Razal" target="_blank" rel="noopener noreferrer" className="text-base hover:text-gray-300">Twitter</a>
+          <a href="https://www.instagram.com/hadi_razal/" target="_blank" rel="noopener noreferrer" className="text-base hover:text-gray-300">Instagram</a>
+        </div>
+
+        {/* Copyright */}
+        <div className="border-t border-gray-700 pt-4 text-center text-sm">
+          <p>&copy; {new Date().getFullYear()} myShop. All rights reserved.</p>
+        </div>
+
+      </div>
+    </footer>
+  );
 };
 
 export default Footer;

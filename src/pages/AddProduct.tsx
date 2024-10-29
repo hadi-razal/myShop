@@ -15,9 +15,9 @@ interface ProductData {
   category: string;
   sizes: string[];
   isInStock: boolean;
-  stock: string;
+  availableStock: string;
   images: string[];
-  tags: string[];
+  tags: string;
 }
 
 const CreateProduct = () => {
@@ -30,15 +30,15 @@ const CreateProduct = () => {
     category: '',
     sizes: [],
     isInStock: true,
-    stock: '',
+    availableStock: '',
     images: [],
-    tags: []
+    tags: ''
   });
 
-  const [currentTag, setCurrentTag] = useState('');
   const [currentColor, setCurrentColor] = useState('');
   const [imageFiles, setImageFiles] = useState<File[]>([]);
   const [previewImages, setPreviewImages] = useState<string[]>([]);
+  const [isUploading, setIsUploading] = useState<boolean>(false);
 
   useEffect(() => {
     // Clean up previews when component unmounts or imageFiles change
@@ -63,24 +63,20 @@ const CreateProduct = () => {
     }));
   };
 
-  const handleAddTag = () => {
-    if (currentTag.trim()) {
-      const tags = currentTag.split(',').map(t => t.trim());
-      setProductData(prev => ({
-        ...prev,
-        tags: [...prev.tags, ...tags.filter(t => !prev.tags.includes(t))]
-      }));
-      setCurrentTag('');
-    }
-  };
 
   const handleAddColor = () => {
+    const hexRegex = /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/;
+
     if (currentColor.trim()) {
-      setProductData(prev => ({
-        ...prev,
-        colors: [...prev.colors, currentColor.trim()]
-      }));
-      setCurrentColor('');
+      if (hexRegex.test(currentColor.trim())) {
+        setProductData(prev => ({
+          ...prev,
+          colors: [...prev.colors, currentColor.trim()]
+        }));
+        setCurrentColor('');
+      } else {
+        console.log("Please enter a valid hex color code (e.g., #FF0000 or #F00)");
+      }
     }
   };
 
@@ -118,23 +114,36 @@ const CreateProduct = () => {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
 
+    setIsUploading(true)
     onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        try {
-          const imageUrls = await uploadImagesToFirebase();
+      try {
+        if (user) {
+          try {
+            const imageUrls = await uploadImagesToFirebase();
 
-          await addDoc(collection(db, `${user.uid}`), {
-            ...productData,
-            images: imageUrls
-          });
+            await addDoc(collection(db, `${user.uid}`), {
+              ...productData,
+              images: imageUrls
+            });
 
-          console.log('Product Data:', productData);
-        } catch (error) {
-          console.error('Error adding document:', error);
+            console.log('Product Data:', productData);
+            setIsUploading(false)
+
+          } catch (error) {
+            setIsUploading(false)
+
+            console.error('Error adding document:', error);
+          }
+        } else {
+          setIsUploading(false)
+
+          console.log('No user is signed in.');
         }
-      } else {
-        console.log('No user is signed in.');
+      } catch (error) {
+        setIsUploading(false)
+        console.log("error while uploading", error)
       }
+
     });
   };
 
@@ -239,8 +248,8 @@ const CreateProduct = () => {
               <label className="block text-sm font-medium">Stock Quantity (optional)</label>
               <input
                 type="text"
-                name="stock"
-                value={productData.stock}
+                name="availableStock"
+                value={productData.availableStock}
                 onChange={handleInputChange}
                 className="w-full px-3 py-2 border bg-gray-200 rounded-md"
                 placeholder="Enter stock quantity"
@@ -250,7 +259,7 @@ const CreateProduct = () => {
 
           {/* Colors */}
           <div className="space-y-2">
-            <label className="block text-sm font-medium">Color</label>
+            <label className="block text-sm font-medium">Color (optional)</label>
             <div className='flex items-center justify-center pb-3'>
               <input
                 type="text"
@@ -264,9 +273,19 @@ const CreateProduct = () => {
               </div>
 
             </div>
-            {productData.colors.map((color, index) => (
-              <span key={index} className="px-2 py-1 m-1 bg-gray-200 rounded-md text-sm">{color}</span>
-            ))}
+
+            <div className='flex items-center gap-2 justify-start flex-wrap'>
+              {productData.colors.map((color, index) => (
+                <span key={index}
+                  style={{ background: color }}
+                  onClick={() => { }}
+                  className={`relative cursor-pointer h-[35px] w-[35px] rounded-[50%] flex items-center justify-center shadow-lg`}
+                >
+                  {color}
+                </span>
+              ))}
+            </div>
+
           </div>
 
 
@@ -275,13 +294,14 @@ const CreateProduct = () => {
             <label className="block text-sm font-medium">Tags</label>
             <input
               type="text"
-              value={currentTag}
-              onChange={(e) => setCurrentTag(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && handleAddTag()}
+              name='tags'
+              value={productData.tags}
+              onChange={handleInputChange}
               placeholder="Add tags"
               className="w-full px-3 py-2 border rounded-md bg-gray-200"
             />
           </div>
+
 
           {/* Image Upload */}
           <div className="space-y-4">
@@ -299,7 +319,7 @@ const CreateProduct = () => {
                   </button>
                 </div>
               ))}
-              <label className="flex items-center justify-center w-24 h-24 border rounded-md cursor-pointer hover:bg-gray-50">
+              <label className="flex items-center justify-center w-24 h-24 border rounded-md cursor-pointer hover:bg-gray-200">
                 <Plus className="w-8 h-8 text-gray-400" />
                 <input
                   type="file"
@@ -314,7 +334,7 @@ const CreateProduct = () => {
           {/* Submit Button */}
           <div>
             <button type="submit" className="w-full px-4 py-2 text-white bg-gray-950 rounded-md hover:bg-gray-950/90">
-              Create Product
+              {isUploading ? "Uploading..." : " Create Product"}
             </button>
           </div>
         </form>
@@ -322,5 +342,6 @@ const CreateProduct = () => {
     </div>
   );
 };
+
 
 export default CreateProduct;

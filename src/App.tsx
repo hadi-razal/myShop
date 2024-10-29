@@ -6,7 +6,9 @@ import Login from "./pages/Login"
 import Register from "./pages/Register"
 import UserDashboard from "./pages/UserDashboard"
 import AddProduct from "./pages/AddProduct"
-// import Footer from "./components/Footer"
+import PrivacyPolicy from "./pages/PrivacyPolicy"
+import TermsAndConditions from "./pages/TermsAndConditions"
+import Footer from "./components/Footer"
 
 const App = () => {
   return (
@@ -16,6 +18,8 @@ const App = () => {
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/about-us" element={<AboutUs />} />
+        <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
+        <Route path="/privacy-policy" element={<PrivacyPolicy />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
 
@@ -24,7 +28,7 @@ const App = () => {
 
       </Routes>
 
-      {/* <Footer/> */}
+      <Footer/>
     </BrowserRouter>
   )
 }
