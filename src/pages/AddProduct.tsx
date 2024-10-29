@@ -1,5 +1,10 @@
-import { useState, ChangeEvent, FormEvent } from 'react';
+
+import { useState, useEffect, ChangeEvent, FormEvent } from 'react';
 import { Plus, X } from 'lucide-react';
+import { addDoc, collection } from 'firebase/firestore';
+import { auth, db, storage } from '../../libs/firebase';
+import { onAuthStateChanged } from 'firebase/auth';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 
 interface ProductData {
   name: string;
@@ -15,9 +20,7 @@ interface ProductData {
   tags: string[];
 }
 
-
 const CreateProduct = () => {
-
   const [productData, setProductData] = useState<ProductData>({
     name: '',
     description: '',
@@ -33,8 +36,17 @@ const CreateProduct = () => {
   });
 
   const [currentTag, setCurrentTag] = useState('');
+  const [currentColor, setCurrentColor] = useState('');
+  const [imageFiles, setImageFiles] = useState<File[]>([]);
+  const [previewImages, setPreviewImages] = useState<string[]>([]);
 
-  // Handle basic input changes
+  useEffect(() => {
+    // Clean up previews when component unmounts or imageFiles change
+    return () => {
+      previewImages.forEach(URL.revokeObjectURL);
+    };
+  }, [previewImages]);
+
   const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setProductData(prev => ({
@@ -43,16 +55,14 @@ const CreateProduct = () => {
     }));
   };
 
-  // Handle category change
-  const handleCategoryChange = (e: ChangeEvent<HTMLSelectElement>) => {
+  const handleCheckboxChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const { name, checked } = e.target;
     setProductData(prev => ({
       ...prev,
-      category: e.target.value
+      [name]: checked
     }));
   };
 
-
-  // Handle tag addition and removal
   const handleAddTag = () => {
     if (currentTag.trim()) {
       const tags = currentTag.split(',').map(t => t.trim());
@@ -64,34 +74,77 @@ const CreateProduct = () => {
     }
   };
 
-  const removeTag = (tagToRemove: string) => {
+  const handleAddColor = () => {
+    if (currentColor.trim()) {
+      setProductData(prev => ({
+        ...prev,
+        colors: [...prev.colors, currentColor.trim()]
+      }));
+      setCurrentColor('');
+    }
+  };
+
+  const handleCategoryChange = (e: ChangeEvent<HTMLSelectElement>) => {
     setProductData(prev => ({
       ...prev,
-      tags: prev.tags.filter(tag => tag !== tagToRemove)
+      category: e.target.value
     }));
   };
 
-  const handleImageUpload = (event: any) => {
-    const files: any = Array.from(event.target.files);
-    const newImages = files.map((file: any) => URL.createObjectURL(file));
-    setProductData((prevData) => ({
-      ...prevData,
-      images: [...prevData.images, ...newImages],
-    }));
+  const handleImageUpload = (event: ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files) {
+      const newFiles = Array.from(event.target.files) as File[];
+      const updatedFiles = [...imageFiles, ...newFiles];
+      setImageFiles(updatedFiles);
+
+      const newPreviews = newFiles.map(file => URL.createObjectURL(file));
+      setPreviewImages(prev => [...prev, ...newPreviews]);
+    }
   };
 
-  const removeImage = (index: any) => {
-    setProductData((prevData) => ({
-      ...prevData,
-      images: prevData.images.filter((_, i) => i !== index),
-    }));
+  const uploadImagesToFirebase = async () => {
+    const urls: string[] = [];
+
+    for (const file of imageFiles) {
+      const storageRef = ref(storage, `products/${file.name}`);
+      await uploadBytes(storageRef, file);
+      const downloadURL = await getDownloadURL(storageRef);
+      urls.push(downloadURL);
+    }
+
+    return urls;
   };
 
-  // Submit form
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    console.log('Product Data:', productData);
+
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        try {
+          const imageUrls = await uploadImagesToFirebase();
+
+          await addDoc(collection(db, `${user.uid}`), {
+            ...productData,
+            images: imageUrls
+          });
+
+          console.log('Product Data:', productData);
+        } catch (error) {
+          console.error('Error adding document:', error);
+        }
+      } else {
+        console.log('No user is signed in.');
+      }
+    });
   };
+
+  const removeImage = (index: number) => {
+    URL.revokeObjectURL(previewImages[index]);
+
+    setPreviewImages(prev => prev.filter((_, i) => i !== index));
+    setImageFiles(prev => prev.filter((_, i) => i !== index));
+  };
+
 
   return (
     <div className="w-full max-w-4xl mx-auto px-3 pb-10 pt-40">
@@ -127,33 +180,27 @@ const CreateProduct = () => {
           </div>
 
           {/* Pricing */}
-          <div className="space-y-3">
-           
-
-            <div className="space-y-2">
-              <label className="block text-sm font-medium">Regular Price</label>
-              <input
-                type="text"
-                name="regularPrice"
-                value={productData.regularPrice}
-                onChange={handleInputChange}
-                className="w-full px-3 py-2 border bg-gray-200 rounded-md"
-                placeholder="₹0.00"
-              />
-            </div>
-
-
-            <div className="space-y-2">
-              <label className="block text-sm font-medium">Discount Price (optional)</label>
-              <input
-                type="text"
-                name="discountPrice"
-                value={productData.discountPrice}
-                onChange={handleInputChange}
-                className="w-full px-3 py-2 border bg-gray-200 rounded-md"
-                placeholder="₹0.00"
-              />
-            </div>
+          <div className="space-y-2">
+            <label className="block text-sm font-medium">Regular Price</label>
+            <input
+              type="text"
+              name="regularPrice"
+              value={productData.regularPrice}
+              onChange={handleInputChange}
+              className="w-full px-3 py-2 border bg-gray-200 rounded-md"
+              placeholder="₹0.00"
+            />
+          </div>
+          <div className="space-y-2">
+            <label className="block text-sm font-medium">Discount Price</label>
+            <input
+              type="text"
+              name="discountPrice"
+              value={productData.discountPrice}
+              onChange={handleInputChange}
+              className="w-full px-3 py-2 border bg-gray-200 rounded-md"
+              placeholder="₹0.00"
+            />
           </div>
 
           {/* Category */}
@@ -174,39 +221,73 @@ const CreateProduct = () => {
           </div>
 
 
-          {/* Tag Input */}
+          {/* In Stock Toggle */}
           <div className="space-y-2">
-            <label className="block text-sm font-medium">Tags</label>
-            <div className="flex flex-wrap gap-2">
-              {productData.tags.map((tag, index) => (
-                <div key={index} className="flex items-center space-x-2 border rounded-md px-3 py-1">
-                  <span>{tag}</span>
-                  <button
-                    type="button"
-                    onClick={() => removeTag(tag)}
-                    className="text-gray-500 hover:text-red-500"
-                  >
-                    <X className="w-4 h-4" />
-                  </button>
-                </div>
-              ))}
+            <label className="block text-sm font-medium">In Stock</label>
+            <input
+              type="checkbox"
+              name="isInStock"
+              checked={productData.isInStock}
+              onChange={handleCheckboxChange}
+              className="mr-2"
+            />
+          </div>
+
+          {/* Stock Quantity */}
+          {productData.isInStock && (
+            <div className="space-y-2">
+              <label className="block text-sm font-medium">Stock Quantity (optional)</label>
               <input
                 type="text"
-                value={currentTag}
-                onChange={(e) => setCurrentTag(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && handleAddTag()}
-                onBlur={() => handleAddTag()}
-                placeholder="Add tags (separate with commas)"
-                className="w-full px-3 py-2 border rounded-md bg-gray-200"
+                name="stock"
+                value={productData.stock}
+                onChange={handleInputChange}
+                className="w-full px-3 py-2 border bg-gray-200 rounded-md"
+                placeholder="Enter stock quantity"
               />
             </div>
+          )}
+
+          {/* Colors */}
+          <div className="space-y-2">
+            <label className="block text-sm font-medium">Color</label>
+            <div className='flex items-center justify-center pb-3'>
+              <input
+                type="text"
+                value={currentColor}
+                onChange={(e) => setCurrentColor(e.target.value)}
+                placeholder="enter color code eg:#fefefe"
+                className="w-2/3 px-3 py-2 border  rounded-l-md bg-gray-200"
+              />
+              <button type="button" onClick={handleAddColor} className="text-sm w-1/3 font-medium  px-3 py-3 text-white rounded-r-md bg-gray-950">Add Color</button>
+              <div className="flex flex-wrap gap-2 mt-2">
+              </div>
+
+            </div>
+            {productData.colors.map((color, index) => (
+              <span key={index} className="px-2 py-1 m-1 bg-gray-200 rounded-md text-sm">{color}</span>
+            ))}
+          </div>
+
+
+          {/* Tags */}
+          <div className="space-y-2">
+            <label className="block text-sm font-medium">Tags</label>
+            <input
+              type="text"
+              value={currentTag}
+              onChange={(e) => setCurrentTag(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && handleAddTag()}
+              placeholder="Add tags"
+              className="w-full px-3 py-2 border rounded-md bg-gray-200"
+            />
           </div>
 
           {/* Image Upload */}
           <div className="space-y-4">
             <label className="block text-sm font-medium">Product Images</label>
             <div className="flex flex-wrap gap-2 mb-4">
-              {productData.images.map((image, index) => (
+              {previewImages.map((image, index) => (
                 <div key={index} className="relative w-24 h-24">
                   <img src={image} alt={`Product ${index + 1}`} className="w-full h-full object-cover rounded-md" />
                   <button
@@ -218,8 +299,6 @@ const CreateProduct = () => {
                   </button>
                 </div>
               ))}
-
-              {/* Add Image Button */}
               <label className="flex items-center justify-center w-24 h-24 border rounded-md cursor-pointer hover:bg-gray-50">
                 <Plus className="w-8 h-8 text-gray-400" />
                 <input
