@@ -4,11 +4,12 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { auth, db } from '../../libs/firebase';
-import { collection, getDocs } from 'firebase/firestore';
+import { collection, doc, getDoc, getDocs } from 'firebase/firestore';
 
 const UserDashboard = () => {
 
   const [numberOfProducts, setNumberOfProducts] = useState<number | null>(null);
+  const [numberOfStoreVisit, setNumberOfStoreVisit] = useState<number | null>(null);
 
   useEffect(() => {
     const fetchProductCount = async (userId: string) => {
@@ -21,12 +22,32 @@ const UserDashboard = () => {
       }
     };
 
+    const fetchStoreVisit = async (userId: string) => {
+      try {
+        const userDocRef = doc(db, "users", userId); 
+        const snapshotUser = await getDoc(userDocRef);
+    
+        if (snapshotUser.exists()) {
+          const data = snapshotUser.data();
+          setNumberOfStoreVisit(data.visitCount); 
+        } else {
+          console.log("User document does not exist.");
+        }
+      } catch (error) {
+        console.error("Error fetching store visit count:", error);
+      }
+    };
+    
+
     onAuthStateChanged(auth, (user) => {
       if (user) {
         fetchProductCount(user.uid);
+        fetchStoreVisit(user.uid);
       }
     });
   }, []);
+
+
   const visitorData = [
     { name: 'Mon', visitors: 2400 },
     { name: 'Tue', visitors: 1398 },
@@ -65,7 +86,7 @@ const UserDashboard = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-gray-500 text-sm">Total Visitors</p>
-                <h3 className="text-2xl font-bold text-slate-950">1,483</h3>
+                <h3 className="text-2xl font-bold text-slate-950">{numberOfStoreVisit}</h3>
                 <p className="text-green-500 text-sm">This week</p>
               </div>
               <div className="bg-purple-50 p-3 rounded-full">

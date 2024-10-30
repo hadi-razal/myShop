@@ -1,19 +1,44 @@
 import { useParams } from "react-router-dom";
 import ProductCard from "../components/ProductCard";
 import { useEffect, useState } from "react";
-import { collection, getDocs } from "firebase/firestore";
+import { collection, doc, getDocs, increment, updateDoc } from "firebase/firestore";
 import { db } from "../../libs/firebase";
 import { Search } from "lucide-react";
+import { getUserId } from "../../helpers/GetUserId"
 
 const Products = () => {
   const { storeId } = useParams();
   const [products, setProducts] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
+
+  useEffect(() => {
+
+    const getId = async () => {
+
+      if (storeId) {
+        const userID = await getUserId(storeId)
+        console.log(userID)
+
+        if(userID){
+          const userDocRef = doc(db, "users", userID);
+          const test = await updateDoc(userDocRef, {
+            visitCount: increment(1),
+          });
+          localStorage.setItem('catalogueVisitCounted', 'true');
+          console.log(test)
+        }
+
+      }}
+
+    getId()
+
+  }, []);
+
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const productsRef = collection(db, "zknyYkN9eAgaVZBjUfU9Us54QzC2");
+        const productsRef = collection(db, storeId || "");
         const querySnapshot = await getDocs(productsRef);
         const productList = querySnapshot.docs.map((doc) => ({
           id: doc.id,

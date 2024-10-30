@@ -49,7 +49,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
 
                 </div>
 
-                <h3 className="font-medium text-lg line-clamp-3">{product.name}</h3>
+                <h3 className="font-medium text-ellipsis line-clamp-1">{product.name}</h3>
                 <div className="flex items-center text-xl text-yellow-500">
                     {'★'.repeat(Math.floor(3))}
                     {'☆'.repeat(5 - Math.floor(3))}

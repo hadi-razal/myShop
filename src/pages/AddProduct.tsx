@@ -1,7 +1,7 @@
 
 import { useState, useEffect, ChangeEvent, FormEvent } from 'react';
 import { Plus, X } from 'lucide-react';
-import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
+import { addDoc, collection, doc, getDoc, serverTimestamp } from 'firebase/firestore';
 import { auth, db, storage } from '../../libs/firebase';
 import { onAuthStateChanged } from 'firebase/auth';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
@@ -18,7 +18,7 @@ interface ProductData {
   availableStock: string;
   images: string[];
   tags: string;
-  createdAt?:Date;
+  createdAt?: Date;
 }
 
 const CreateProduct = () => {
@@ -113,39 +113,43 @@ const CreateProduct = () => {
   };
 
   const handleSubmit = async (e: FormEvent) => {
+
     e.preventDefault();
+    setIsUploading(true);
 
-    setIsUploading(true)
     onAuthStateChanged(auth, async (user) => {
-      try {
-        if (user) {
-          try {
-            const imageUrls = await uploadImagesToFirebase();
+      if (user) {
+        try {
+          const userDocRef = doc(db, "users", user.uid);  
+          const userDocSnap = await getDoc(userDocRef);
 
-            await addDoc(collection(db, `${user.uid}`), {
-              ...productData,
-              images: imageUrls,
-              createdAt: serverTimestamp(), 
-            });
+          if (userDocSnap.exists()) {
+            const userData = userDocSnap.data();
 
-            console.log('Product Data:', productData);
-            setIsUploading(false)
+            try {
+              const imageUrls = await uploadImagesToFirebase();
 
-          } catch (error) {
-            setIsUploading(false)
+              await addDoc(collection(db, `${userData.username}`), {
+                ...productData,
+                images: imageUrls,
+                createdAt: serverTimestamp(),
+              });
 
-            console.error('Error adding document:', error);
+              console.log('Product Data:', productData);
+            } catch (error) {
+              console.error('Error adding document:', error);
+            }
+          } else {
+            console.log('User document does not exist');
           }
-        } else {
-          setIsUploading(false)
-
-          console.log('No user is signed in.');
+        } catch (error) {
+          console.error("Error fetching user data:", error);
         }
-      } catch (error) {
-        setIsUploading(false)
-        console.log("error while uploading", error)
+      } else {
+        console.log('No user is signed in.');
       }
 
+      setIsUploading(false);
     });
   };
 
