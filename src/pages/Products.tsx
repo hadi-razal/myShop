@@ -19,12 +19,15 @@ const Products = () => {
         const userID = await getUserId(storeId);
         console.log(userID);
 
-        if (userID) {
+        const isCounted = localStorage.getItem(`MyShop_${storeId}_View`);
+
+
+        if (userID && !isCounted) {
           const userDocRef = doc(db, "users", userID);
           await updateDoc(userDocRef, {
             visitCount: increment(1),
           });
-          localStorage.setItem('catalogueVisitCounted', 'true');
+          localStorage.setItem(`MyShop_${storeId}_View`, 'true');
         }
 
         try {
