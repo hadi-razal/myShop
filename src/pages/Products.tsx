@@ -4,55 +4,51 @@ import { useEffect, useState } from "react";
 import { collection, doc, getDocs, increment, updateDoc } from "firebase/firestore";
 import { db } from "../../libs/firebase";
 import { Search } from "lucide-react";
-import { getUserId } from "../../helpers/GetUserId"
+import { getUserId } from "../../helpers/GetUserId";
 
 const Products = () => {
   const { storeId } = useParams();
   const [products, setProducts] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-
   useEffect(() => {
-
-    const getId = async () => {
+    const fetchProducts = async () => {
+      setIsLoading(true); // Start loading
 
       if (storeId) {
-        const userID = await getUserId(storeId)
-        console.log(userID)
+        const userID = await getUserId(storeId);
+        console.log(userID);
 
-        if(userID){
+        if (userID) {
           const userDocRef = doc(db, "users", userID);
-          const test = await updateDoc(userDocRef, {
+          await updateDoc(userDocRef, {
             visitCount: increment(1),
           });
           localStorage.setItem('catalogueVisitCounted', 'true');
-          console.log(test)
         }
 
-      }}
-
-    getId()
-
-  }, []);
-
-  useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const productsRef = collection(db, storeId || "");
-        const querySnapshot = await getDocs(productsRef);
-        const productList = querySnapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
-        setProducts(productList);
-        setIsLoading(false);
-      } catch (error) {
-        console.error("Error fetching products: ", error);
-        setIsLoading(false);
+        try {
+          const productsRef = collection(db, userID as string);
+          const querySnapshot = await getDocs(productsRef);
+          const productList = querySnapshot.docs.map((doc) => ({
+            id: doc.id,
+            ...doc.data(),
+          }));
+          setProducts(productList);
+        } catch (error) {
+          console.error("Error fetching products: ", error);
+        }
       }
+
+      setIsLoading(false); // End loading
     };
 
     fetchProducts();
+
+    // Cleanup function to avoid memory leaks if needed
+    return () => {
+      setProducts([]); // Reset products if component unmounts
+    };
   }, [storeId]);
 
   return (
